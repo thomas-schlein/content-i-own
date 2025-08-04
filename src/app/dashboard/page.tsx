@@ -1,15 +1,13 @@
 'use client';
 
 import { BrowserMultiFormatReader } from '@zxing/library';
-import { useRef, useEffect } from 'react';
-
-const reader = new BrowserMultiFormatReader();
-
-let videoElement: HTMLVideoElement;
+import { useRef, useEffect, useState } from 'react';
 
 export default function Page() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const reader = useRef(new BrowserMultiFormatReader());
+
+  const [text, setText] = useState('nothing yet');
 
   useEffect(() => {
     if (!videoRef.current) return;
@@ -22,8 +20,8 @@ export default function Page() {
       },
       videoRef.current,
       (result, error) => {
-        if (result) console.log(result);
-        if (error) console.log(error);
+        if (result) setText(result.toString());
+        if (error) setText(error.message);
       }
     );
     return () => {
@@ -31,5 +29,10 @@ export default function Page() {
     };
   }, [videoRef]);
 
-  return <video ref={videoRef} />;
+  return (
+    <>
+      <h1>{text}</h1>
+      <video ref={videoRef} />
+    </>
+  );
 }
